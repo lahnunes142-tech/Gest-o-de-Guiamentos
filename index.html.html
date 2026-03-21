@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laura Nunes — Guia de Turismo</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terra: #ef9201; --terra-light: #f7b042; --terra-pale: #fef3e0;
+    --verde: #111111; --verde-mid: #333333; --verde-light: #666666; --verde-pale: #f0f0f0;
+    --creme: #f8f8f8; --creme-mid: #e4e4e4;
+    --escuro: #111111; --cinza: #555555; --cinza-light: #aaaaaa;
+    --branco: #ffffff;
+    --sombra: 0 4px 24px rgba(0,0,0,0.10);
+    --sombra-hover: 0 8px 40px rgba(0,0,0,0.20);
+    --radius: 16px; --radius-sm: 8px;
+    --rc-criar: #E3E8FF; --rc-criar-t: #3B4FA8; --rc-criar-b: #A5B4FC;
+    --rc-pendente: #FFF3CD; --rc-pendente-t: #856404; --rc-pendente-b: #FFDA6A;
+    --rc-validar: #FDE8D0; --rc-validar-t: #7A3A00; --rc-validar-b: #F9A85D;
+    --rc-finalizado: #D4EDDA; --rc-finalizado-t: #155724; --rc-finalizado-b: #89D399;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--creme);color:var(--escuro);min-height:100vh}
+
+  /* SIDEBAR */
+  .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--verde);display:flex;flex-direction:column;padding:32px 0;z-index:100}
+  .logo{padding:0 28px 24px;border-bottom:1px solid rgba(255,255,255,0.12)}
+  .logo-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--creme);line-height:1.1}
+  .logo-sub{font-size:11px;color:#ef9201;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .nav{padding:18px 16px;flex:1}
+  .nav-section{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;padding:10px 16px 5px}
+  .nav-btn{width:100%;display:flex;align-items:center;gap:12px;padding:11px 16px;border:none;border-radius:var(--radius-sm);background:transparent;color:rgba(250,246,240,0.6);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;margin-bottom:3px;text-align:left}
+  .nav-btn:hover{background:rgba(255,255,255,0.08);color:var(--creme)}
+  .nav-btn.active{background:var(--terra);color:white}
+  .nav-icon{font-size:17px;width:22px;text-align:center}
+  .sidebar-footer{padding:18px 28px;border-top:1px solid rgba(255,255,255,0.12);font-size:12px;color:#ef9201}
+
+  /* MAIN - handled in sync bar section */
+  .page{display:none}.page.active{display:block}
+  .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px}
+  .page-title{font-family:'DM Serif Display',serif;font-size:36px;color:#111111;line-height:1.1}
+  .page-subtitle{font-size:14px;color:var(--cinza);margin-top:6px}
+
+  /* BTNS */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+  .btn-primary{background:var(--terra);color:white}
+  .btn-primary:hover{background:var(--terra-light);transform:translateY(-1px);box-shadow:var(--sombra-hover)}
+  .btn-ghost{background:transparent;color:var(--cinza);border:1.5px solid var(--creme-mid)}
+  .btn-ghost:hover{border-color:var(--terra);color:var(--terra)}
+  .btn-verde{background:#111111;color:white}
+  .btn-verde:hover{background:#333333}
+  .btn-sm{padding:7px 14px;font-size:12px}
+  .card{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);padding:28px}
+
+  /* TAGS */
+  .tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+  .tag-remarcado{background:#FFF3CD;color:#856404;border:1px solid #FFDA6A}
+  .tag-pago-parcial{background:#FDE8D0;color:#7A3A00;border:1px solid var(--terra-light)}
+  .tag-pago-total{background:#D4EDDA;color:#155724;border:1px solid #89D399}
+  .tag-primeiro{background:#D1ECF1;color:#0C5460;border:1px solid #7ED4E2}
+  .tag-recorrente{background:#E8F0E3;color:var(--verde);border:1px solid var(--verde-light)}
+  .tag-dificil{background:#F8D7DA;color:#721C24;border:1px solid #F5A5AE}
+  .tag-aberto{background:#E2E3E5;color:#383D41;border:1px solid #C3C5C7}
+  .tag-rc-criar{background:var(--rc-criar);color:var(--rc-criar-t);border:1px solid var(--rc-criar-b)}
+  .tag-rc-pendente{background:var(--rc-pendente);color:var(--rc-pendente-t);border:1px solid var(--rc-pendente-b)}
+  .tag-rc-validar{background:var(--rc-validar);color:var(--rc-validar-t);border:1px solid var(--rc-validar-b)}
+  .tag-rc-finalizado{background:var(--rc-finalizado);color:var(--rc-finalizado-t);border:1px solid var(--rc-finalizado-b)}
+
+  /* CALENDARIO */
+  .cal-controls{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+  .cal-month-title{font-family:'DM Serif Display',serif;font-size:26px;color:#111111;flex:1;text-align:center}
+  .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+  .cal-day{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;transition:box-shadow .2s,transform .2s}
+  .cal-day:hover{box-shadow:var(--sombra-hover);transform:translateY(-2px)}
+  .cal-day-header{padding:14px 18px;background:#111111;color:white;display:flex;align-items:center;justify-content:space-between}
+  .cal-day.saturday .cal-day-header{background:#ef9201}
+  .cal-day.sunday .cal-day-header{background:#111111}
+  .cal-day-date{font-family:'DM Serif Display',serif;font-size:28px;line-height:1}
+  .cal-day-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
+  .cal-day-body{padding:14px 18px 18px}
+  .cal-day-empty{font-size:12px;color:var(--cinza-light);font-style:italic;padding:8px 0}
+  .cal-event{margin-top:10px;padding:10px 12px;background:var(--creme);border-radius:var(--radius-sm);border-left:3px solid #ef9201}
+  .cal-event-name{font-size:13px;font-weight:600;margin-bottom:4px}
+  .cal-event-info{font-size:11px;color:var(--cinza);margin-bottom:6px}
+  .cal-event-tags{display:flex;flex-wrap:wrap;gap:4px}
+  .cal-add-btn{margin-top:10px;width:100%;padding:8px;border:1.5px dashed var(--creme-mid);border-radius:var(--radius-sm);background:transparent;color:var(--cinza-light);font-size:12px;cursor:pointer;transition:all .2s}
+  .cal-add-btn:hover{border-color:var(--terra);color:var(--terra)}
+
+  /* STATS */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+  .stat-card{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);padding:24px}
+  .stat-label{font-size:12px;color:var(--cinza);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-family:'DM Serif Display',serif;font-size:32px;color:#111111}
+  .stat-value.money::before{content:'R$ ';font-size:16px}
+  .stat-value.danger{color:#ef9201}
+  .stat-sub{font-size:12px;color:var(--cinza-light);margin-top:4px}
+
+  /* TABLE */
+  .table-wrapper{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{padding:12px 16px;text-align:left;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--cinza);border-bottom:2px solid var(--creme-mid);white-space:nowrap}
+  tbody tr{border-bottom:1px solid var(--creme-mid);transition:background .15s}
+  tbody tr:hover{background:var(--creme)}
+  tbody tr:last-child{border-bottom:none}
+  tbody td{padding:14px 16px;color:var(--escuro);vertical-align:middle}
+  .td-name{font-weight:600}
+  .td-money{font-weight:600;font-family:'DM Serif Display',serif;font-size:15px}
+  .td-money.pago{color:#ef9201}.td-money.pendente{color:#c0392b}
+  .td-tags{display:flex;flex-wrap:wrap;gap:4px}
+
+  /* CLIENTES */
+  .client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .client-card{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);padding:22px;transition:all .2s}
+  .client-card:hover{box-shadow:var(--sombra-hover);transform:translateY(-2px)}
+  .client-name{font-weight:700;font-size:16px;margin-bottom:4px}
+  .client-meta{font-size:12px;color:var(--cinza);margin-bottom:10px}
+  .client-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+  .client-payment{background:var(--creme);border-radius:var(--radius-sm);padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .pay-item{display:flex;flex-direction:column;gap:2px}
+  .pay-label{color:var(--cinza);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+  .pay-value{font-weight:700;font-size:15px;font-family:'DM Serif Display',serif}
+  .pay-value.ok{color:#ef9201}.pay-value.pending{color:#c0392b}
+  .progress-bar{height:4px;background:var(--creme-mid);border-radius:4px;margin-top:10px;overflow:hidden}
+  .progress-fill{height:100%;background:#ef9201;border-radius:4px;transition:width .4s ease}
+  .delete-btn{background:none;border:none;cursor:pointer;color:var(--cinza-light);font-size:16px;transition:color .2s;padding:4px}
+  .delete-btn:hover{color:#c0392b}
+
+  /* ROTEIROS PIPELINE SUMMARY */
+  .pipeline-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+  .pipe-stat{border-radius:var(--radius-sm);padding:16px 18px;display:flex;align-items:center;gap:12px}
+  .pipe-stat-icon{font-size:22px}
+  .pipe-stat-num{font-family:'DM Serif Display',serif;font-size:28px;line-height:1}
+  .pipe-stat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  .pipe-stat.criar{background:var(--rc-criar);color:var(--rc-criar-t)}
+  .pipe-stat.pendente{background:var(--rc-pendente);color:var(--rc-pendente-t)}
+  .pipe-stat.validar{background:var(--rc-validar);color:var(--rc-validar-t)}
+  .pipe-stat.finalizado{background:var(--rc-finalizado);color:var(--rc-finalizado-t)}
+
+  /* KANBAN */
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+  .kanban-col{border-radius:var(--radius);background:var(--branco);box-shadow:var(--sombra);overflow:hidden}
+  .kanban-col-header{padding:14px 16px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--creme-mid)}
+  .kanban-col.criar .kanban-col-header{border-bottom-color:var(--rc-criar-b)}
+  .kanban-col.pendente .kanban-col-header{border-bottom-color:var(--rc-pendente-b)}
+  .kanban-col.validar .kanban-col-header{border-bottom-color:var(--rc-validar-b)}
+  .kanban-col.finalizado .kanban-col-header{border-bottom-color:var(--rc-finalizado-b)}
+  .kanban-col-title{font-size:12px;font-weight:700;flex:1;text-transform:uppercase;letter-spacing:.5px}
+  .kanban-count{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+  .kanban-col.criar .kanban-count{background:var(--rc-criar);color:var(--rc-criar-t)}
+  .kanban-col.pendente .kanban-count{background:var(--rc-pendente);color:var(--rc-pendente-t)}
+  .kanban-col.validar .kanban-count{background:var(--rc-validar);color:var(--rc-validar-t)}
+  .kanban-col.finalizado .kanban-count{background:var(--rc-finalizado);color:var(--rc-finalizado-t)}
+  .kanban-body{padding:12px;display:flex;flex-direction:column;gap:10px;min-height:80px}
+
+  /* ROTEIRO CARD */
+  .roteiro-card{background:var(--creme);border-radius:var(--radius-sm);padding:14px;border:1.5px solid var(--creme-mid);transition:all .2s;cursor:pointer}
+  .roteiro-card:hover{border-color:var(--terra);box-shadow:var(--sombra);transform:translateY(-1px)}
+  .roteiro-card-name{font-size:13px;font-weight:700;margin-bottom:3px}
+  .roteiro-card-date{font-size:11px;color:var(--cinza-light)}
+  .roteiro-card-destino{font-size:12px;color:var(--cinza);margin:5px 0;font-style:italic}
+  .roteiro-card-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .rc-btn{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:none;cursor:pointer;transition:all .15s}
+  .rc-btn:hover{opacity:.8;transform:scale(1.03)}
+  .rc-btn-criar{background:var(--rc-criar);color:var(--rc-criar-t)}
+  .rc-btn-pendente{background:var(--rc-pendente);color:var(--rc-pendente-t)}
+  .rc-btn-validar{background:var(--rc-validar);color:var(--rc-validar-t)}
+  .rc-btn-finalizado{background:var(--rc-finalizado);color:var(--rc-finalizado-t)}
+  .rc-btn-edit{background:var(--creme-mid);color:var(--cinza)}
+
+  /* TIMELINE */
+  .roteiro-timeline{display:flex;align-items:flex-start;margin:10px 0 4px}
+  .tl-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+  .tl-step:not(:last-child)::after{content:'';position:absolute;top:9px;left:50%;width:100%;height:2px;background:var(--creme-mid);z-index:0}
+  .tl-step.done:not(:last-child)::after{background:#ef9201}
+  .tl-dot{width:20px;height:20px;border-radius:50%;background:var(--creme-mid);border:2px solid var(--cinza-light);z-index:1;position:relative;display:flex;align-items:center;justify-content:center;font-size:9px}
+  .tl-step.done .tl-dot{background:#ef9201;border-color:#c97800;color:white}
+  .tl-step.active .tl-dot{background:var(--terra);border-color:var(--terra);color:white;box-shadow:0 0 0 3px var(--terra-pale)}
+  .tl-label{font-size:9px;color:var(--cinza-light);text-align:center;line-height:1.2;margin-top:2px}
+  .tl-step.done .tl-label,.tl-step.active .tl-label{color:var(--cinza);font-weight:600}
+
+  /* DETAIL PANEL */
+  .detail-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,.45);z-index:500}
+  .detail-overlay.open{display:flex;justify-content:flex-end}
+  .detail-panel{width:520px;max-width:96vw;height:100vh;background:var(--branco);box-shadow:-10px 0 60px rgba(26,18,9,.2);overflow-y:hidden;animation:slideIn .25s ease;display:flex;flex-direction:column}
+  @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+  .detail-header{padding:28px 28px 20px;background:#111111;color:white;position:relative}
+  .detail-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);border:none;color:white;font-size:18px;width:34px;height:34px;border-radius:50%;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center}
+  .detail-close:hover{background:rgba(255,255,255,0.28)}
+  .detail-title{font-family:'DM Serif Display',serif;font-size:22px;line-height:1.2;margin-bottom:4px;padding-right:40px}
+  .detail-meta{font-size:12px;opacity:.75}
+  .detail-body{padding:24px 28px;flex:1;overflow-y:auto}
+  .detail-footer{padding:18px 28px;border-top:1px solid var(--creme-mid);display:flex;gap:10px;justify-content:flex-end;background:var(--branco);flex-shrink:0}
+
+  /* STATUS PIPELINE in panel */
+  .status-pipeline{display:flex;background:var(--creme);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:24px;border:1.5px solid var(--creme-mid)}
+  .status-step{flex:1;padding:10px 4px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;transition:all .2s;color:var(--cinza-light);border-right:1px solid var(--creme-mid);line-height:1.4}
+  .status-step:last-child{border-right:none}
+  .status-step:hover{background:var(--creme-mid);color:var(--cinza)}
+  .status-step.active-criar{background:var(--rc-criar);color:var(--rc-criar-t)}
+  .status-step.active-pendente{background:var(--rc-pendente);color:var(--rc-pendente-t)}
+  .status-step.active-validar{background:var(--rc-validar);color:var(--rc-validar-t)}
+  .status-step.active-finalizado{background:var(--rc-finalizado);color:var(--rc-finalizado-t)}
+
+  /* STOPS */
+  .stops-section{margin-bottom:22px}
+  .section-label{font-size:12px;font-weight:700;color:#555555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .stop-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--creme-mid)}
+  .stop-item:last-child{border-bottom:none}
+  .stop-number{width:26px;height:26px;border-radius:50%;background:#ef9201;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .stop-content{flex:1}
+  .stop-name{font-size:13px;font-weight:600}
+  .stop-time{font-size:11px;color:var(--terra);margin-top:2px}
+  .stop-del{background:none;border:none;cursor:pointer;color:var(--cinza-light);font-size:14px;transition:color .2s;padding:4px}
+  .stop-del:hover{color:#c0392b}
+  .add-stop-form{display:flex;gap:8px;margin-top:12px}
+  .add-stop-form input{padding:8px 12px;border:1.5px solid var(--creme-mid);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--creme);outline:none;transition:border-color .2s}
+  .add-stop-form input:focus{border-color:#ef9201;background:white}
+  .add-stop-form .inp-nome{flex:1}
+  .add-stop-form .inp-time{width:90px}
+
+  /* FORM */
+  .form-group{margin-bottom:18px}
+  label{display:block;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin-bottom:6px}
+  input,textarea,select{width:100%;padding:11px 14px;border:1.5px solid var(--creme-mid);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--escuro);background:var(--creme);transition:border-color .2s;outline:none}
+  input:focus,textarea:focus,select:focus{border-color:#ef9201;background:white}
+  textarea{resize:vertical;min-height:80px}
+  .notes-area{width:100%;min-height:90px;padding:12px;border:1.5px solid var(--creme-mid);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--creme);outline:none;resize:vertical;transition:border-color .2s}
+  .notes-area:focus{border-color:#ef9201;background:white}
+  .tag-selector{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .tag-option{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;border:2px solid transparent;transition:all .15s;user-select:none}
+  .tag-option.selected{border-color:var(--escuro)!important}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--branco);border-radius:var(--radius);box-shadow:0 24px 80px rgba(26,18,9,.25);width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:36px;animation:slideUp .25s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .modal-title{font-family:'DM Serif Display',serif;font-size:24px;color:#111111;margin-bottom:24px}
+  .modal-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid var(--creme-mid)}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--cinza-light)}
+  .empty-icon{font-size:48px;margin-bottom:12px}.empty-text{font-size:16px}
+  .toast{position:fixed;bottom:30px;right:30px;background:#ef9201;color:white;padding:14px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;box-shadow:var(--sombra-hover);transform:translateY(20px);opacity:0;transition:all .3s;z-index:9999}
+  .toast.show{transform:translateY(0);opacity:1}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--creme-mid)}
+  ::-webkit-scrollbar-thumb{background:#ef9201;border-radius:10px}
+
+  /* ── MOBILE BOTTOM NAV ── */
+  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#111111;z-index:200;padding:8px 0 env(safe-area-inset-bottom,8px);box-shadow:0 -2px 20px rgba(0,0,0,0.2)}
+  .mobile-nav-inner{display:flex;justify-content:space-around;align-items:center}
+  .mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border:none;background:transparent;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:8px;min-width:60px}
+  .mobile-nav-btn .mn-icon{font-size:20px;line-height:1}
+  .mobile-nav-btn.active{color:#ef9201}
+  .mobile-nav-btn.active .mn-icon{transform:scale(1.15)}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px){
+    .sidebar{display:none}
+    .mobile-nav{display:block}
+    .main{margin-left:0;padding:20px 16px 90px}
+    .page-header{flex-direction:column;gap:14px;margin-bottom:24px}
+    .page-title{font-size:28px}
+    .btn-primary{width:100%;justify-content:center}
+    .cal-grid{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:1fr 1fr}
+    .client-grid{grid-template-columns:1fr}
+    .form-row{grid-template-columns:1fr}
+    .pipeline-summary{grid-template-columns:1fr 1fr;gap:8px}
+    .pipe-stat{padding:12px}
+    .pipe-stat-num{font-size:22px}
+    .pipe-stat-lbl{font-size:10px}
+    .kanban{grid-template-columns:1fr;gap:12px}
+    .detail-panel{width:100vw;max-width:100vw}
+    .detail-body{padding:18px 16px}
+    .detail-header{padding:20px 16px 16px}
+    .detail-footer{padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+    .modal{padding:24px 18px}
+    .card{padding:18px}
+    .toast{bottom:90px;right:16px;left:16px;text-align:center}
+    .add-stop-form{flex-wrap:wrap}
+    .add-stop-form .inp-nome{width:100%}
+    .add-stop-form .inp-time{flex:1}
+    .status-pipeline{flex-wrap:nowrap}
+    .status-step{font-size:9px;padding:8px 2px}
+    table{font-size:12px}
+    thead th{padding:10px 10px}
+    tbody td{padding:10px 10px}
+    .cal-month-title{font-size:20px}
+  }
+
+  @media(max-width:400px){
+    .stats-grid{grid-template-columns:1fr}
+    .pipeline-summary{grid-template-columns:1fr 1fr}
+    .client-payment{grid-template-columns:1fr 1fr}
+  }
+  /* ── SYNC BAR ── */
+  .sync-bar{position:fixed;top:0;left:0;right:0;height:44px;background:#111111;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:300;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+  .sync-bar-logo{font-family:'DM Serif Display',serif;font-size:15px;color:white;letter-spacing:.5px}
+  .sync-bar-logo span{color:#ef9201}
+  .sync-bar-right{display:flex;align-items:center;gap:10px}
+  .sync-status{font-size:11px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:5px}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:#aaa;flex-shrink:0}
+  .sync-dot.ok{background:#4caf50;box-shadow:0 0 6px #4caf50}
+  .sync-dot.syncing{background:#ef9201;animation:pulse .8s infinite}
+  .sync-dot.offline{background:#aaa}
+  .sync-dot.error{background:#e53935}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .btn-sync{padding:6px 14px;font-size:12px;font-weight:700;border:none;border-radius:6px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+  .btn-login{background:#ef9201;color:white}
+  .btn-login:hover{background:#f7b042}
+  .btn-logout{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:11px;padding:5px 10px}
+  .btn-logout:hover{background:rgba(255,255,255,0.2);color:white}
+  .btn-force-sync{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:11px;padding:5px 10px}
+  .btn-force-sync:hover{background:#ef9201;color:white}
+  .main{margin-left:240px;min-height:100vh;padding:60px 40px 40px}
+  @media(max-width:768px){
+    .main{margin-left:0;padding:60px 16px 90px}
+    .sync-bar{padding:0 14px}
+  }
+</style>
+</head>
+<body>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-bar-logo">Laura <span>Nunes</span> · Guia de Turismo</div>
+  <div class="sync-bar-right">
+    <div class="sync-status" id="syncStatus">
+      <div class="sync-dot offline" id="syncDot"></div>
+      <span id="syncText">Não conectado</span>
+    </div>
+    <button class="btn-sync btn-force-sync" id="btnForceSync" onclick="forceSyncNow()" style="display:none">↻ Sync</button>
+    <button class="btn-sync btn-login" id="btnLogin" onclick="doLogin()">☁️ Conectar Drive</button>
+    <button class="btn-sync btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Sair</button>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-title">Laura<br>Nunes</div>
+    <div class="logo-sub">Guia de Turismo</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Agenda</div>
+    <button class="nav-btn active" onclick="showPage('calendario',this)"><span class="nav-icon">📅</span> Calendário</button>
+    <button class="nav-btn" onclick="showPage('clientes',this)"><span class="nav-icon">👥</span> Atendimentos</button>
+    <div class="nav-section" style="margin-top:8px">Planejamento</div>
+    <button class="nav-btn" onclick="showPage('roteiros',this)"><span class="nav-icon">🗺️</span> Roteiros</button>
+    <div class="nav-section" style="margin-top:8px">Financeiro</div>
+    <button class="nav-btn" onclick="showPage('financeiro',this)"><span class="nav-icon">💰</span> Financeiro</button>
+  </nav>
+  <div class="sidebar-footer">Fins de semana · 2025</div>
+</aside>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" id="mnb-calendario" onclick="showPage('calendario',this);setMobileNav('calendario')">
+      <span class="mn-icon">📅</span>Calendário
+    </button>
+    <button class="mobile-nav-btn" id="mnb-clientes" onclick="showPage('clientes',this);setMobileNav('clientes')">
+      <span class="mn-icon">👥</span>Clientes
+    </button>
+    <button class="mobile-nav-btn" id="mnb-roteiros" onclick="showPage('roteiros',this);setMobileNav('roteiros')">
+      <span class="mn-icon">🗺️</span>Roteiros
+    </button>
+    <button class="mobile-nav-btn" id="mnb-financeiro" onclick="showPage('financeiro',this);setMobileNav('financeiro')">
+      <span class="mn-icon">💰</span>Financeiro
+    </button>
+  </div>
+</nav>
+
+<main class="main">
+
+  <!-- CALENDÁRIO -->
+  <section id="page-calendario" class="page active">
+    <div class="page-header">
+      <div><h1 class="page-title">Calendário</h1><p class="page-subtitle">Seus finais de semana do ano</p></div>
+      <button class="btn btn-primary" onclick="openModal()">＋ Novo Atendimento</button>
+    </div>
+    <div class="cal-controls">
+      <button class="btn btn-ghost btn-sm" onclick="changeMonth(-1)">← Anterior</button>
+      <div class="cal-month-title" id="monthTitle"></div>
+      <button class="btn btn-ghost btn-sm" onclick="changeMonth(1)">Próximo →</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </section>
+
+  <!-- ATENDIMENTOS -->
+  <section id="page-clientes" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Atendimentos</h1><p class="page-subtitle" id="clientCount">0 registrados</p></div>
+      <button class="btn btn-primary" onclick="openModal()">＋ Novo Atendimento</button>
+    </div>
+    <div class="client-grid" id="clientGrid"></div>
+  </section>
+
+  <!-- ROTEIROS -->
+  <section id="page-roteiros" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Roteiros</h1><p class="page-subtitle">Pipeline de criação e validação — clique em um card para editar</p></div>
+      <button class="btn btn-primary" onclick="openModal()">＋ Novo Atendimento</button>
+    </div>
+    <div class="pipeline-summary" id="pipelineSummary"></div>
+    <div class="kanban">
+      <div class="kanban-col criar">
+        <div class="kanban-col-header criar"><span style="font-size:16px">📝</span><span class="kanban-col-title">Criar Roteiro</span><span class="kanban-count" id="cnt-criar">0</span></div>
+        <div class="kanban-body" id="col-criar"></div>
+      </div>
+      <div class="kanban-col pendente">
+        <div class="kanban-col-header pendente"><span style="font-size:16px">⏳</span><span class="kanban-col-title">Pendente de Agendamento</span><span class="kanban-count" id="cnt-pendente">0</span></div>
+        <div class="kanban-body" id="col-pendente"></div>
+      </div>
+      <div class="kanban-col validar">
+        <div class="kanban-col-header validar"><span style="font-size:16px">🔍</span><span class="kanban-col-title">Validar Roteiro</span><span class="kanban-count" id="cnt-validar">0</span></div>
+        <div class="kanban-body" id="col-validar"></div>
+      </div>
+      <div class="kanban-col finalizado">
+        <div class="kanban-col-header finalizado"><span style="font-size:16px">✅</span><span class="kanban-col-title">Roteiro Finalizado — Enviado p/ Cliente</span><span class="kanban-count" id="cnt-finalizado">0</span></div>
+        <div class="kanban-body" id="col-finalizado"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINANCEIRO -->
+  <section id="page-financeiro" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Relatório Financeiro</h1><p class="page-subtitle">Controle de pagamentos e recebimentos</p></div>
+    </div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <strong style="font-size:16px;color:#ef9201">Todos os Atendimentos</strong>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="filterTable('todos')">Todos</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterTable('pendente')">Pendentes</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterTable('pago')">Pagos</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Cliente</th><th>Data</th><th>Total</th><th>1ª Parcela</th><th>2ª Parcela</th><th>Status Pgto</th><th>Roteiro</th><th>Tags</th></tr></thead>
+          <tbody id="financeTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetailOutside(event)">
+  <div class="detail-panel">
+    <div class="detail-header">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+      <div class="detail-title" id="dpTitle">—</div>
+      <div class="detail-meta" id="dpMeta">—</div>
+    </div>
+    <div class="detail-body">
+      <div class="section-label" style="margin-bottom:8px">Status do Roteiro — clique para avançar</div>
+      <div class="status-pipeline" id="dpStatusPipeline">
+        <div class="status-step" data-status="criar"     onclick="setDetailStatus('criar')">📝<br>Criar</div>
+        <div class="status-step" data-status="pendente"  onclick="setDetailStatus('pendente')">⏳<br>Pendente</div>
+        <div class="status-step" data-status="validar"   onclick="setDetailStatus('validar')">🔍<br>Validar</div>
+        <div class="status-step" data-status="finalizado"onclick="setDetailStatus('finalizado')">✅<br>Finalizado</div>
+      </div>
+      <div class="form-group">
+        <div class="section-label">Destino / Título do Roteiro</div>
+        <input type="text" id="dpDestino" placeholder="Ex: Centro Histórico + Museu Nacional" oninput="markDpDirty()">
+      </div>
+      <div class="stops-section">
+        <div class="section-label">📍 Paradas do Roteiro</div>
+        <div id="dpStops"></div>
+        <div class="add-stop-form">
+          <input class="inp-nome" type="text" id="stopName" placeholder="Nome da parada" onkeydown="if(event.key==='Enter')addStop()">
+          <input class="inp-time" type="text" id="stopTime" placeholder="Horário" onkeydown="if(event.key==='Enter')addStop()">
+          <button class="btn btn-verde btn-sm" onclick="addStop()">＋</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="section-label">Observações do Roteiro</div>
+        <textarea class="notes-area" id="dpNotes" placeholder="Preferências do grupo, necessidades especiais, pontos de atenção..." oninput="markDpDirty()"></textarea>
+      </div>
+    </div>
+    <div class="detail-footer">
+      <button class="btn btn-ghost" onclick="closeDetail()">Fechar</button>
+      <button class="btn btn-primary" id="dpSaveBtn" onclick="saveDetail()">💾 Salvar Roteiro</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ATENDIMENTO -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h2 class="modal-title" id="modalTitle">Novo Atendimento</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Nome do cliente / grupo</label><input type="text" id="fNome" placeholder="Ex: Família Silva"></div>
+      <div class="form-group"><label>Data do atendimento</label><input type="date" id="fData"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Nº de pessoas</label><input type="number" id="fPessoas" placeholder="Ex: 4" min="1"></div>
+      <div class="form-group"><label>Valor total (R$)</label><input type="number" id="fValor" value="450" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>1ª parcela paga (R$225)</label><input type="number" id="f1Parcela" placeholder="225.00" step="0.01"></div>
+      <div class="form-group"><label>2ª parcela paga</label><input type="number" id="f2Parcela" placeholder="225.00" step="0.01"></div>
+    </div>
+    <div class="form-group"><label>Destino / Roteiro</label><input type="text" id="fRoteiroNome" placeholder="Ex: Centro Histórico + Museu Nacional"></div>
+    <div class="form-group"><label>Observações</label><textarea id="fObs" placeholder="Preferências, detalhes especiais, contato..."></textarea></div>
+    <div class="form-group">
+      <label>Tags do atendimento</label>
+      <div class="tag-selector" id="tagSelector">
+        <span class="tag-option tag-remarcado"  data-tag="remarcado"  onclick="toggleTag(this)">🔄 Remarcado</span>
+        <span class="tag-option tag-primeiro"   data-tag="primeiro"   onclick="toggleTag(this)">⭐ Primeiro Atendimento</span>
+        <span class="tag-option tag-recorrente" data-tag="recorrente" onclick="toggleTag(this)">🔁 Cliente Recorrente</span>
+        <span class="tag-option tag-dificil"    data-tag="dificil"    onclick="toggleTag(this)">⚠️ Cliente Difícil</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAtendimento()">Salvar Atendimento</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   GOOGLE DRIVE CONFIG — cole seu Client ID aqui
+═══════════════════════════════════════ */
+const GD_CLIENT_ID = '1014961712426-r2omiqqjnnv14iso9rkb4eg6ahg3ou7n.apps.googleusercontent.com';
+const GD_SCOPES    = 'https://www.googleapis.com/auth/drive.appdata';
+const GD_FILE_NAME = 'lauranunes_guiagem.json';
+
+/* DATA */
+let dados    = JSON.parse(localStorage.getItem('gg_dados')    || '[]');
+let roteiros = JSON.parse(localStorage.getItem('gg_roteiros') || '{}');
+let editId = null, detailId = null, dpDirty = false;
+let currentMonth = new Date().getMonth(), currentYear = new Date().getFullYear();
+let filterStatus = 'todos';
+
+/* ── LOCAL SAVE ── */
+function save()         { localStorage.setItem('gg_dados',    JSON.stringify(dados));    scheduleSync(); }
+function saveRoteiros() { localStorage.setItem('gg_roteiros', JSON.stringify(roteiros)); scheduleSync(); }
+function getRoteiro(id) { return roteiros[id] || { status:'criar', destino:'', paradas:[], notas:'' }; }
+
+/* ═══════════════════════════════════════
+   GOOGLE DRIVE SYNC
+═══════════════════════════════════════ */
+let gdToken      = null;
+let gdFileId     = null;
+let syncTimer    = null;
+let syncPending  = false;
+
+function setSyncUI(state, text) {
+  const dot  = document.getElementById('syncDot');
+  const txt  = document.getElementById('syncText');
+  const btnL = document.getElementById('btnLogin');
+  const btnO = document.getElementById('btnLogout');
+  const btnS = document.getElementById('btnForceSync');
+  dot.className = 'sync-dot ' + state;
+  txt.textContent = text;
+  if(state === 'ok' || state === 'syncing' || state === 'error') {
+    btnL.style.display = 'none';
+    btnO.style.display = 'inline-flex';
+    btnS.style.display = 'inline-flex';
+  } else {
+    btnL.style.display = 'inline-flex';
+    btnO.style.display = 'none';
+    btnS.style.display = 'none';
+  }
+}
+
+function doLogin() {
+  if(!GD_CLIENT_ID || GD_CLIENT_ID === 'COLE_SEU_CLIENT_ID_AQUI') {
+    showToast('Configure o Client ID do Google primeiro!', true); return;
+  }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GD_CLIENT_ID,
+    scope: GD_SCOPES,
+    callback: async (resp) => {
+      if(resp.error){ setSyncUI('error','Erro ao conectar'); return; }
+      gdToken = resp.access_token;
+      localStorage.setItem('gg_gd_token', gdToken);
+      setSyncUI('syncing','Conectando...');
+      await gdLoadOrCreate();
+    }
+  });
+  client.requestAccessToken();
+}
+
+function doLogout() {
+  gdToken = null; gdFileId = null;
+  localStorage.removeItem('gg_gd_token');
+  setSyncUI('offline','Não conectado');
+  showToast('Desconectado do Google Drive');
+}
+
+function forceSyncNow() { gdSave(); }
+
+function scheduleSync() {
+  if(!gdToken) return;
+  syncPending = true;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>{ if(syncPending) gdSave(); }, 2000);
+}
+
+async function gdLoadOrCreate() {
+  setSyncUI('syncing','Buscando dados...');
+  try {
+    // Search for existing file
+    const search = await fetch(
+      `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${GD_FILE_NAME}'&fields=files(id,name)`,
+      { headers: { Authorization: 'Bearer ' + gdToken } }
+    );
+    const sData = await search.json();
+
+    if(sData.files && sData.files.length > 0) {
+      gdFileId = sData.files[0].id;
+      // Download content
+      const dl = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${gdFileId}?alt=media`,
+        { headers: { Authorization: 'Bearer ' + gdToken } }
+      );
+      const cloud = await dl.json();
+      if(cloud.dados)    { dados    = cloud.dados;    localStorage.setItem('gg_dados',    JSON.stringify(dados)); }
+      if(cloud.roteiros) { roteiros = cloud.roteiros; localStorage.setItem('gg_roteiros', JSON.stringify(roteiros)); }
+      setSyncUI('ok','Sincronizado ✓');
+      showToast('Dados carregados do Drive!');
+    } else {
+      // Create new file with current local data
+      await gdSaveNew();
+    }
+    // Re-render current page
+    const ap = document.querySelector('.page.active').id.replace('page-','');
+    if(ap==='calendario') renderCalendar();
+    if(ap==='clientes')   renderClients();
+    if(ap==='roteiros')   renderRoteiros();
+    if(ap==='financeiro') renderFinance();
+  } catch(e) {
+    setSyncUI('error','Erro na sincronização');
+    showToast('Erro ao acessar o Drive', true);
+  }
+}
+
+async function gdSaveNew() {
+  const payload = JSON.stringify({ dados, roteiros });
+  const meta    = JSON.stringify({ name: GD_FILE_NAME, parents: ['appDataFolder'] });
+  const form    = new FormData();
+  form.append('metadata', new Blob([meta],     { type:'application/json' }));
+  form.append('file',     new Blob([payload],  { type:'application/json' }));
+  const res  = await fetch(
+    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+    { method:'POST', headers:{ Authorization:'Bearer '+gdToken }, body: form }
+  );
+  const data = await res.json();
+  gdFileId   = data.id;
+  setSyncUI('ok','Sincronizado ✓');
+}
+
+async function gdSave() {
+  if(!gdToken) return;
+  setSyncUI('syncing','Salvando...');
+  syncPending = false;
+  try {
+    const payload = JSON.stringify({ dados, roteiros });
+    if(!gdFileId) { await gdSaveNew(); return; }
+    await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${gdFileId}?uploadType=media`,
+      { method:'PATCH', headers:{ Authorization:'Bearer '+gdToken, 'Content-Type':'application/json' }, body: payload }
+    );
+    setSyncUI('ok','Sincronizado ✓');
+  } catch(e) {
+    setSyncUI('error','Erro ao salvar');
+  }
+}
+
+/* Auto-reconnect if token stored */
+window.addEventListener('load', ()=>{
+  const stored = localStorage.getItem('gg_gd_token');
+  if(stored && GD_CLIENT_ID !== 'COLE_SEU_CLIENT_ID_AQUI') {
+    gdToken = stored;
+    setSyncUI('syncing','Reconectando...');
+    gdLoadOrCreate();
+  }
+});
+
+/* TAGS */
+const TAG_CONFIG = {
+  remarcado:    { label:'🔄 Remarcado',          cls:'tag-remarcado'    },
+  pago_parcial: { label:'💛 Pago Parcial',        cls:'tag-pago-parcial' },
+  pago_total:   { label:'✅ Pago Total',           cls:'tag-pago-total'   },
+  em_aberto:    { label:'⏳ Em Aberto',            cls:'tag-aberto'       },
+  primeiro:     { label:'⭐ Primeiro Atend.',      cls:'tag-primeiro'     },
+  recorrente:   { label:'🔁 Recorrente',          cls:'tag-recorrente'   },
+  dificil:      { label:'⚠️ Difícil',             cls:'tag-dificil'      },
+  rc_criar:     { label:'📝 Criar Roteiro',       cls:'tag-rc-criar'     },
+  rc_pendente:  { label:'⏳ Pendente de Agendamento',    cls:'tag-rc-pendente'  },
+  rc_validar:   { label:'🔍 Validar Roteiro',     cls:'tag-rc-validar'   },
+  rc_finalizado:{ label:'✅ Roteiro Finalizado — Enviado p/ Cliente',  cls:'tag-rc-finalizado'},
+};
+const RC_ORDER = ['criar','pendente','validar','finalizado'];
+const PIPE_CFG = {
+  criar:     { icon:'📝', label:'Criar Roteiro',      cls:'criar'     },
+  pendente:  { icon:'⏳', label:'Pendente de Agendamento',         cls:'pendente'  },
+  validar:   { icon:'🔍', label:'Validar Roteiro',    cls:'validar'   },
+  finalizado:{ icon:'✅', label:'Roteiro Finalizado — Enviado p/ Cliente', cls:'finalizado'},
+};
+const RC_BORDER = {
+  criar:'var(--cinza-light)', pendente:'var(--rc-pendente-b)',
+  validar:'var(--rc-validar-b)', finalizado:'var(--rc-finalizado-b)'
+};
+
+function renderTag(key) { const t=TAG_CONFIG[key]; return t?`<span class="tag ${t.cls}">${t.label}</span>`:''; }
+function getPaymentTag(item) {
+  const r = parseFloat(item.p1||0)+parseFloat(item.p2||0), total=parseFloat(item.valor||450);
+  return r>=total?'pago_total':r>0?'pago_parcial':'em_aberto';
+}
+function toggleTag(el) { el.classList.toggle('selected'); }
+function getSelectedTags() { return [...document.querySelectorAll('#tagSelector .tag-option.selected')].map(e=>e.dataset.tag); }
+
+/* NAVIGATION */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn&&btn.classList.contains('nav-btn')) btn.classList.add('active');
+  if(id==='calendario') renderCalendar();
+  if(id==='clientes')   renderClients();
+  if(id==='roteiros')   renderRoteiros();
+  if(id==='financeiro') renderFinance();
+}
+function setMobileNav(id){
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('mnb-'+id);
+  if(el)el.classList.add('active');
+}
+
+/* CALENDAR */
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function changeMonth(d) {
+  currentMonth+=d;
+  if(currentMonth>11){currentMonth=0;currentYear++;}
+  if(currentMonth<0) {currentMonth=11;currentYear--;}
+  renderCalendar();
+}
+function getWeekends(y,m) {
+  const days=[],d=new Date(y,m,1);
+  while(d.getMonth()===m){if(d.getDay()===6||d.getDay()===0)days.push(new Date(d));d.setDate(d.getDate()+1);}
+  return days;
+}
+function renderCalendar() {
+  document.getElementById('monthTitle').textContent=`${MONTHS[currentMonth]} ${currentYear}`;
+  const wk=getWeekends(currentYear,currentMonth), grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  if(!wk.length){grid.innerHTML='<p style="color:var(--cinza-light);font-style:italic">Nenhum fim de semana neste mês.</p>';return;}
+  wk.forEach(date=>{
+    const dow=date.getDay(), ds=date.toISOString().split('T')[0];
+    const cls=dow===6?'saturday':'sunday', lbl=dow===6?'Sábado':'Domingo';
+    const evs=dados.filter(a=>a.data===ds);
+    let evHtml=evs.length?evs.map(ev=>{
+      const rc=getRoteiro(ev.id), payTag=getPaymentTag(ev), tags=[...ev.tags,payTag];
+      return `<div class="cal-event" style="border-left-color:${RC_BORDER[rc.status]||'var(--cinza-light)'}">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="cal-event-name">${ev.nome}</div>
+          <button class="delete-btn" onclick="deleteItem('${ev.id}');event.stopPropagation()">✕</button>
+        </div>
+        <div class="cal-event-info">${ev.pessoas||'—'} pess. · ${rc.destino||ev.roteiroNome||'Sem roteiro'}</div>
+        <div class="cal-event-tags">${tags.map(renderTag).join('')}</div>
+        <span class="tag tag-rc-${rc.status}" style="margin-top:5px;display:inline-flex">${PIPE_CFG[rc.status].icon} ${PIPE_CFG[rc.status].label}</span>
+        <div style="margin-top:6px"><button class="rc-btn rc-btn-edit" onclick="openDetail('${ev.id}');event.stopPropagation()">🗺️ Ver Roteiro</button></div>
+      </div>`;
+    }).join(''):`<div class="cal-day-empty">Livre</div>`;
+    grid.innerHTML+=`<div class="cal-day ${cls}">
+      <div class="cal-day-header"><div><div class="cal-day-date">${String(date.getDate()).padStart(2,'0')}</div><div class="cal-day-label">${lbl}</div></div><span style="font-size:20px">${dow===6?'🌿':'☀️'}</span></div>
+      <div class="cal-day-body">${evHtml}<button class="cal-add-btn" onclick="openModal('${ds}')">＋ Adicionar</button></div>
+    </div>`;
+  });
+}
+
+/* CLIENTS */
+function renderClients() {
+  const grid=document.getElementById('clientGrid');
+  document.getElementById('clientCount').textContent=`${dados.length} atendimento(s) registrado(s)`;
+  if(!dados.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🗺️</div><div class="empty-text">Nenhum atendimento ainda.</div></div>`;return;}
+  const sorted=[...dados].sort((a,b)=>new Date(b.data)-new Date(a.data));
+  grid.innerHTML=sorted.map(item=>{
+    const p1=parseFloat(item.p1||0),p2=parseFloat(item.p2||0),total=parseFloat(item.valor||450);
+    const rec=p1+p2,pend=Math.max(0,total-rec),pct=Math.min(100,(rec/total)*100);
+    const payTag=getPaymentTag(item),rc=getRoteiro(item.id);
+    const tags=[...item.tags,payTag];
+    const dd=item.data?new Date(item.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    return `<div class="client-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div><div class="client-name">${item.nome}</div><div class="client-meta">${dd} · ${item.pessoas||'—'} pessoa(s)</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="openDetail('${item.id}')" title="Roteiro">🗺️</button>
+          <button class="btn btn-ghost btn-sm" onclick="openModal(null,'${item.id}')">✏️</button>
+          <button class="delete-btn" onclick="deleteItem('${item.id}')">✕</button>
+        </div>
+      </div>
+      <div class="client-tags">${tags.map(renderTag).join('')}<span class="tag tag-rc-${rc.status}">${PIPE_CFG[rc.status].icon} ${PIPE_CFG[rc.status].label}</span></div>
+      ${rc.destino?`<div style="font-size:12px;color:var(--cinza);margin-bottom:6px">📍 ${rc.destino}</div>`:''}
+      <div class="client-payment">
+        <div class="pay-item"><span class="pay-label">Total</span><span class="pay-value">R$ ${total.toFixed(2)}</span></div>
+        <div class="pay-item"><span class="pay-label">Recebido</span><span class="pay-value ok">R$ ${rec.toFixed(2)}</span></div>
+        <div class="pay-item"><span class="pay-label">1ª Parcela</span><span class="pay-value ${p1>=225?'ok':'pending'}">R$ ${p1.toFixed(2)}</span></div>
+        <div class="pay-item"><span class="pay-label">Pendente</span><span class="pay-value ${pend>0?'pending':'ok'}">R$ ${pend.toFixed(2)}</span></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ROTEIROS */
+function renderTimeline(cur) {
+  const idx=RC_ORDER.indexOf(cur);
+  return RC_ORDER.map((s,i)=>{
+    const done=i<idx,active=i===idx;
+    return `<div class="tl-step ${done?'done':''} ${active?'active':''}">
+      <div class="tl-dot">${done?'✓':active?PIPE_CFG[s].icon:''}</div>
+      <div class="tl-label">${PIPE_CFG[s].label.replace(' Roteiro','').replace('Roteiro ','')}</div>
+    </div>`;
+  }).join('');
+}
+function renderRoteiros() {
+  const counts={criar:0,pendente:0,validar:0,finalizado:0};
+  const cols={criar:[],pendente:[],validar:[],finalizado:[]};
+  dados.forEach(item=>{const rc=getRoteiro(item.id),s=rc.status||'criar';counts[s]++;cols[s].push({item,rc});});
+
+  document.getElementById('pipelineSummary').innerHTML=RC_ORDER.map(s=>{
+    const p=PIPE_CFG[s];
+    return `<div class="pipe-stat ${p.cls}"><div class="pipe-stat-icon">${p.icon}</div><div><div class="pipe-stat-num">${counts[s]}</div><div class="pipe-stat-lbl">${p.label}</div></div></div>`;
+  }).join('');
+
+  RC_ORDER.forEach(s=>{
+    document.getElementById('cnt-'+s).textContent=counts[s];
+    const col=document.getElementById('col-'+s);
+    if(!cols[s].length){col.innerHTML=`<div style="text-align:center;padding:20px;color:var(--cinza-light);font-size:12px;font-style:italic">Nenhum roteiro</div>`;return;}
+    const idx=RC_ORDER.indexOf(s);
+    const nextStep=idx<3?RC_ORDER[idx+1]:null;
+    col.innerHTML=cols[s].map(({item,rc})=>{
+      const dd=item.data?new Date(item.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}):'—';
+      const nBtn=nextStep?`<button class="rc-btn rc-btn-${nextStep}" onclick="advanceStatus('${item.id}','${nextStep}');event.stopPropagation()">→ ${PIPE_CFG[nextStep].label.replace(' Roteiro','').replace('Roteiro ','')}</button>`:`<span style="font-size:10px;color:var(--rc-finalizado-t);font-weight:600">🎉 Concluído</span>`;
+      return `<div class="roteiro-card" onclick="openDetail('${item.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="roteiro-card-name">${item.nome}</div><span class="roteiro-card-date">${dd}</span></div>
+        <div class="roteiro-card-destino">${rc.destino||'<em style="color:var(--cinza-light)">Sem destino definido</em>'}</div>
+        <div style="font-size:11px;color:var(--cinza);margin-bottom:6px">${(rc.paradas||[]).length} parada(s) · ${item.pessoas||'—'} pessoa(s)</div>
+        <div class="roteiro-timeline">${renderTimeline(s)}</div>
+        <div class="roteiro-card-actions">${nBtn}<button class="rc-btn rc-btn-edit" onclick="openDetail('${item.id}');event.stopPropagation()">✏️ Editar</button></div>
+      </div>`;
+    }).join('');
+  });
+}
+function advanceStatus(id,newStatus) {
+  const rc=getRoteiro(id); rc.status=newStatus; roteiros[id]=rc; saveRoteiros();
+  showToast(`Roteiro: ${PIPE_CFG[newStatus].label}`);
+  renderRoteiros();
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-calendario')renderCalendar();
+  if(ap==='page-clientes')renderClients();
+}
+
+/* DETAIL PANEL */
+function openDetail(id) {
+  detailId=id; dpDirty=false;
+  const item=dados.find(d=>d.id===id); if(!item)return;
+  const rc=getRoteiro(id);
+  const dd=item.data?new Date(item.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  document.getElementById('dpTitle').textContent=item.nome;
+  document.getElementById('dpMeta').textContent=`${dd} · ${item.pessoas||'—'} pessoa(s)`;
+  document.getElementById('dpDestino').value=rc.destino||'';
+  document.getElementById('dpNotes').value=rc.notas||'';
+  document.querySelectorAll('#dpStatusPipeline .status-step').forEach(el=>{
+    el.className='status-step';
+    if(el.dataset.status===rc.status) el.classList.add('active-'+rc.status);
+  });
+  renderDetailStops(rc.paradas||[]);
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('dpSaveBtn').textContent='💾 Salvar Roteiro';
+}
+function closeDetail() {
+  if(dpDirty&&!confirm('Há alterações não salvas. Fechar mesmo assim?'))return;
+  document.getElementById('detailOverlay').classList.remove('open');
+  detailId=null; dpDirty=false;
+}
+function closeDetailOutside(e){if(e.target===document.getElementById('detailOverlay'))closeDetail();}
+function markDpDirty(){dpDirty=true;document.getElementById('dpSaveBtn').textContent='💾 Salvar Roteiro *';}
+function setDetailStatus(status) {
+  document.querySelectorAll('#dpStatusPipeline .status-step').forEach(el=>{
+    el.className='status-step';
+    if(el.dataset.status===status)el.classList.add('active-'+status);
+  });
+  markDpDirty();
+}
+function getActiveDetailStatus() {
+  const el=document.querySelector('#dpStatusPipeline .status-step[class*="active-"]');
+  if(!el)return'criar';
+  const cls=[...el.classList].find(c=>c.startsWith('active-'));
+  return cls?cls.replace('active-',''):'criar';
+}
+function renderDetailStops(paradas) {
+  const cont=document.getElementById('dpStops');
+  if(!paradas.length){cont.innerHTML=`<div style="font-size:12px;color:var(--cinza-light);font-style:italic;padding:8px 0">Nenhuma parada adicionada.</div>`;return;}
+  cont.innerHTML=paradas.map((p,i)=>`
+    <div class="stop-item">
+      <div class="stop-number">${i+1}</div>
+      <div class="stop-content"><div class="stop-name">${p.nome}</div>${p.time?`<div class="stop-time">⏰ ${p.time}</div>`:''}</div>
+      <button class="stop-del" onclick="removeStop(${i})">✕</button>
+    </div>`).join('');
+}
+function addStop() {
+  if(!detailId)return;
+  const nome=document.getElementById('stopName').value.trim(); if(!nome)return;
+  const time=document.getElementById('stopTime').value.trim();
+  const rc=getRoteiro(detailId); rc.paradas=rc.paradas||[];
+  rc.paradas.push({nome,time}); roteiros[detailId]=rc; saveRoteiros();
+  document.getElementById('stopName').value=''; document.getElementById('stopTime').value='';
+  renderDetailStops(rc.paradas); markDpDirty(); showToast('Parada adicionada!');
+}
+function removeStop(idx) {
+  const rc=getRoteiro(detailId); rc.paradas.splice(idx,1);
+  roteiros[detailId]=rc; saveRoteiros(); renderDetailStops(rc.paradas); markDpDirty();
+}
+function saveDetail() {
+  if(!detailId)return;
+  const rc=getRoteiro(detailId);
+  rc.destino=document.getElementById('dpDestino').value.trim();
+  rc.notas=document.getElementById('dpNotes').value.trim();
+  rc.status=getActiveDetailStatus();
+  roteiros[detailId]=rc; saveRoteiros();
+  dados=dados.map(d=>d.id===detailId?{...d,roteiroNome:rc.destino}:d); save();
+  dpDirty=false; document.getElementById('dpSaveBtn').textContent='💾 Salvar Roteiro';
+  showToast('Roteiro salvo com sucesso!');
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-calendario')renderCalendar();
+  if(ap==='page-clientes')renderClients();
+  if(ap==='page-roteiros')renderRoteiros();
+}
+
+/* FINANCE */
+function renderFinance() {
+  let tg=0,tr=0,tp=0,qp=0;
+  dados.forEach(item=>{
+    const total=parseFloat(item.valor||450),rec=parseFloat(item.p1||0)+parseFloat(item.p2||0),pend=Math.max(0,total-rec);
+    tg+=total;tr+=rec;tp+=pend;if(pend===0)qp++;
+  });
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total de Atendimentos</div><div class="stat-value" style="color:var(--escuro)">${dados.length}</div><div class="stat-sub">${qp} totalmente quitado(s)</div></div>
+    <div class="stat-card"><div class="stat-label">Valor Total Contratado</div><div class="stat-value money">${tg.toFixed(2)}</div><div class="stat-sub">Soma de todos os contratos</div></div>
+    <div class="stat-card"><div class="stat-label">Total Recebido</div><div class="stat-value money" style="color:#ef9201">${tr.toFixed(2)}</div><div class="stat-sub">Valor já em caixa</div></div>
+    <div class="stat-card"><div class="stat-label">Total Pendente</div><div class="stat-value money danger">${tp.toFixed(2)}</div><div class="stat-sub">A receber ainda</div></div>`;
+  renderTable();
+}
+function filterTable(s){filterStatus=s;renderTable();}
+function renderTable() {
+  const tbody=document.getElementById('financeTable');
+  let rows=[...dados].sort((a,b)=>new Date(b.data)-new Date(a.data));
+  if(filterStatus==='pendente')rows=rows.filter(r=>getPaymentTag(r)!=='pago_total');
+  if(filterStatus==='pago')rows=rows.filter(r=>getPaymentTag(r)==='pago_total');
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--cinza-light)">Nenhum registro.</td></tr>`;return;}
+  tbody.innerHTML=rows.map(item=>{
+    const total=parseFloat(item.valor||450),p1=parseFloat(item.p1||0),p2=parseFloat(item.p2||0);
+    const rec=p1+p2,pend=Math.max(0,total-rec),payTag=getPaymentTag(item),rc=getRoteiro(item.id);
+    const tags=[...item.tags,payTag];
+    const dd=item.data?new Date(item.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}):'—';
+    return `<tr>
+      <td class="td-name">${item.nome}</td><td>${dd}</td>
+      <td class="td-money">R$ ${total.toFixed(2)}</td>
+      <td class="td-money ${p1>0?'pago':'pendente'}">R$ ${p1.toFixed(2)}</td>
+      <td class="td-money ${p2>0?'pago':'pendente'}">R$ ${p2.toFixed(2)}</td>
+      <td class="td-money ${pend>0?'pendente':'pago'}">R$ ${rec.toFixed(2)} / ${total.toFixed(2)}</td>
+      <td><span class="tag tag-rc-${rc.status}">${PIPE_CFG[rc.status].icon} ${PIPE_CFG[rc.status].label}</span></td>
+      <td><div class="td-tags">${tags.map(renderTag).join('')}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* MODAL */
+function openModal(dateStr,id) {
+  editId=id||null;
+  document.getElementById('modalTitle').textContent=editId?'Editar Atendimento':'Novo Atendimento';
+  ['fNome','fData','fPessoas','fRoteiroNome','fObs','f1Parcela','f2Parcela'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('fValor').value='450';
+  document.querySelectorAll('#tagSelector .tag-option').forEach(el=>el.classList.remove('selected'));
+  if(editId){
+    const item=dados.find(d=>d.id===editId);
+    if(item){
+      document.getElementById('fNome').value=item.nome||'';
+      document.getElementById('fData').value=item.data||'';
+      document.getElementById('fPessoas').value=item.pessoas||'';
+      document.getElementById('fValor').value=item.valor||450;
+      document.getElementById('fRoteiroNome').value=item.roteiroNome||'';
+      document.getElementById('fObs').value=item.obs||'';
+      document.getElementById('f1Parcela').value=item.p1||'';
+      document.getElementById('f2Parcela').value=item.p2||'';
+      document.querySelectorAll('#tagSelector .tag-option').forEach(el=>{if(item.tags.includes(el.dataset.tag))el.classList.add('selected');});
+    }
+  } else if(dateStr){document.getElementById('fData').value=dateStr;}
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editId=null;}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+function saveAtendimento() {
+  const nome=document.getElementById('fNome').value.trim(), data=document.getElementById('fData').value;
+  if(!nome||!data){showToast('Preencha nome e data!',true);return;}
+  const d=new Date(data+'T12:00:00');
+  if(d.getDay()!==0&&d.getDay()!==6){showToast('Selecione um final de semana!',true);return;}
+  const id=editId||Date.now().toString();
+  const item={
+    id,nome,data,
+    pessoas:document.getElementById('fPessoas').value,
+    valor:parseFloat(document.getElementById('fValor').value)||450,
+    roteiroNome:document.getElementById('fRoteiroNome').value.trim(),
+    obs:document.getElementById('fObs').value.trim(),
+    p1:parseFloat(document.getElementById('f1Parcela').value)||0,
+    p2:parseFloat(document.getElementById('f2Parcela').value)||0,
+    tags:getSelectedTags(),
+  };
+  if(editId){dados=dados.map(d=>d.id===editId?item:d);}
+  else{
+    dados.push(item);
+    if(!roteiros[id]){roteiros[id]={status:'criar',destino:item.roteiroNome||'',paradas:[],notas:''};saveRoteiros();}
+  }
+  if(item.roteiroNome&&roteiros[id]&&!roteiros[id].destino){roteiros[id].destino=item.roteiroNome;saveRoteiros();}
+  save();closeModal();
+  showToast(editId?'Atendimento atualizado!':'Atendimento salvo! Roteiro adicionado ao pipeline.');
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-calendario')renderCalendar();
+  if(ap==='page-clientes')renderClients();
+  if(ap==='page-roteiros')renderRoteiros();
+  if(ap==='page-financeiro')renderFinance();
+}
+function deleteItem(id) {
+  if(!confirm('Remover este atendimento e seu roteiro?'))return;
+  dados=dados.filter(d=>d.id!==id);delete roteiros[id];
+  save();saveRoteiros();showToast('Removido!');
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-calendario')renderCalendar();
+  if(ap==='page-clientes')renderClients();
+  if(ap==='page-roteiros')renderRoteiros();
+  if(ap==='page-financeiro')renderFinance();
+}
+
+/* TOAST */
+function showToast(msg,err){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=err?'#c0392b':'#ef9201';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* MIGRATE old data */
+['guiagem','guiagem_v2'].forEach(key=>{
+  const old=localStorage.getItem(key);
+  if(old&&!dados.length){
+    try{
+      dados=JSON.parse(old);
+      dados.forEach(item=>{if(!roteiros[item.id])roteiros[item.id]={status:'criar',destino:item.roteiro||item.roteiroNome||'',paradas:[],notas:''};});
+      save();saveRoteiros();
+    }catch(e){}
+  }
+});
+
+renderCalendar();
+</script>
+</body>
+</html>
